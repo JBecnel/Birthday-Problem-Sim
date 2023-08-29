@@ -1,0 +1,171 @@
+package statsim;               // class is part of model package
+
+import java.awt.*;
+import javax.swing.*;
+
+
+/*       Jeremy Becnel                        3/29/05
+
+   This class defines a gui month object.
+*/
+
+
+public class MonthPanel  extends JPanel   {
+
+//-------------------------FIELDS--------------------------
+
+private int days;  // the number of days in the month
+private String name; // the name of the month
+
+private int xpos;  // x position of the GUI
+private int ypos;  // y position of the GUI
+
+private JTextField[] month; // month
+
+
+//-----------------------CONSTANTS-----------------------
+
+// constants for zero, one, two, or three mathces
+protected static final Color DEFAULT = Color.lightGray;
+protected static final Color MATCH1 =  Color.yellow;
+protected static final Color MATCH2 =  new Color(122,0,122); // purple
+protected static final Color MATCH3 =  Color.white;
+
+//-----------------------CONSTRUCTORS-------------------------
+
+  public MonthPanel ()    {
+    /* This method creates a default month panel object.
+    */
+
+    this("January", 31);
+  }
+
+  public MonthPanel(String monthName, int numDays)  {
+    /*  This constructor creates a month panel with the given name
+
+        Pre : given the monthds name and the number of days in a month
+
+        Post: the month panel is created
+    */
+    
+		// set the fields
+    this.name = monthName;
+    this.days = numDays;
+    this.month = new JTextField[numDays];
+    
+		// give the panel a gridbaglayout
+    GridBagLayout gridbag = new GridBagLayout();
+    GridBagConstraints c = new GridBagConstraints();
+    this.setLayout(gridbag);
+    
+		// add the title (name of the month)    
+    c.gridwidth = GridBagConstraints.REMAINDER;
+    this.add(new JLabel(this.name),c);
+    
+		// create and add the month grid    
+		createMonthGrid(c);     
+  }
+
+ //========================METHODS==========================
+
+ 
+ //-------------getNumDays----------------
+ public int getNumDays() {
+ // This function returns the number of days in a month.
+   return this.days;
+ }
+ 
+ //------------getName--------------------
+ public String getName() {
+ // This function returns the name of the month.
+ return this.name;
+ }
+ 
+//---------------setDay-------------------- 
+ public void setDay(int n) {
+		// this method sets the nth day of the month to
+		// display its number
+	 this.month[n-1].setText((new Integer(n)).toString());	 
+ } 
+ 
+ //-----------createMonthGrid-------------------------
+ 
+ private void createMonthGrid(GridBagConstraints c) {
+		// This method creates the grid of days for the month
+		
+		// set default constraints
+    c.gridy=1;
+    c.gridx = 0;
+    c.gridheight = 1;
+    c.gridwidth = 1;
+		// initialize each text field for each day
+    for (int i = 0; i < this.getNumDays(); i++) {
+      this.month[i] = new JTextField((new Integer(i+1)).toString(),2);      
+			this.month[i].setEditable(false);
+			this.month[i].setFont((new Font("Times New Roman", Font.BOLD, 13)));
+    }
+    
+    // add each day to the grid
+    for (int i = 0; i < this.getNumDays(); i++) {
+      this.add(month[i],c);
+      c.gridx = c.gridx + 1;
+      if ((i+1) % 7 == 0) { // start a new line each 7th day
+				c.gridx = 0;
+				c.gridy = c.gridy + 1;
+      }
+       
+		}
+ }
+ 
+//----------------------clearDates--------------------------
+
+ public void clearDates() {
+		// this method clears each day
+	 for (int i = 0; i < this.getNumDays(); i++) {
+		 this.month[i].setText(" ");
+		 this.month[i].setBackground(this.DEFAULT);
+	 }
+ }
+
+//----------------------isMatch------------------------
+
+public boolean isMatch(int d) {
+	// this method determines if the given day of the month
+	// is already represented on the month panel
+	String stxt = this.month[d-1].getText();
+	String sday = (new Integer(d)).toString();
+	
+	return (stxt.equals(sday));
+
+}
+
+//---------------------recordMatch----------------------
+
+public void recordMatch(int d) {
+	// if a match is made, this method records it
+	// by changing the background color accordingly
+  Color c = this.month[d-1].getBackground();
+
+  if (c.equals(this.MATCH1)) 	
+	 this.month[d-1].setBackground(this.MATCH2);
+	else if (c.equals(this.MATCH2))
+		this.month[d-1].setBackground(this.MATCH3);
+	else if (c.equals(this.MATCH3))
+		this.month[d-1].setBackground(this.MATCH3);
+	else
+		this.month[d-1].setBackground(this.MATCH1);
+	
+}
+ 
+
+//----------------getDateLocation----------------
+
+public Point getDateLocation(MyDate d) {	
+	// this method determines the on screen location of a date
+  int day = d.getDay();
+  return this.month[day-1].getLocationOnScreen();	
+}
+
+
+}  // end class
+
